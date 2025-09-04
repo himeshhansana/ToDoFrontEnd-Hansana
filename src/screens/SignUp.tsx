@@ -12,6 +12,7 @@ import {
   ScrollView,
   Animated,
   Dimensions,
+  Image,
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from "expo-status-bar";
@@ -58,7 +59,7 @@ export default function SignUp({
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
-  
+
   // Input animation values
   const nameInputScale = useRef(new Animated.Value(1)).current;
   const emailInputScale = useRef(new Animated.Value(1)).current;
@@ -114,10 +115,10 @@ export default function SignUp({
     if (name.trim() === '' || email.trim() === '' || password.trim() === '') {
       return;
     }
-    
+
     setIsLoading(true);
     animateButton();
-    
+
     try {
       if (onSignUp) {
         onSignUp(name, email, password);
@@ -163,7 +164,7 @@ export default function SignUp({
             keyboardShouldPersistTaps="handled"
             bounces={false}
           >
-            <Animated.View 
+            <Animated.View
               style={[
                 styles.content,
                 {
@@ -176,7 +177,7 @@ export default function SignUp({
               ]}
             >
               {/* Header with enhanced animation */}
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.header,
                   {
@@ -184,19 +185,34 @@ export default function SignUp({
                   }
                 ]}
               >
-                {/* Logo Container with pulse animation */}
-                <Animated.View style={[styles.logoContainer, { 
-                  transform: [{ scale: scaleAnim }] 
-                }]}>
-                  <View style={[styles.logoCircle, { 
-                    backgroundColor: Colors.primary,
-                    shadowColor: Colors.primary 
-                  }]}>
-                    <Text style={styles.logoText}>👤</Text>
+                {/* Create Account Illustration */}
+                <Animated.View
+                  style={[
+                    styles.illustrationContainer,
+                    {
+                      transform: [{ scale: scaleAnim }]
+                    }
+                  ]}
+                >
+                  <View style={styles.signUpMainIcon}>
+                    <Text style={styles.signUpMainIconText}>👤</Text>
+                  </View>
+                  <View style={styles.signUpIconsContainer}>
+                    <View style={styles.signUpIcon1}>
+                      <Text style={styles.signUpIcon1Text}>👤</Text>
+                    </View>
+                    <View style={styles.signUpConnector} />
+                    <View style={styles.signUpIcon2}>
+                      <Text style={styles.signUpIcon2Text}>📧</Text>
+                    </View>
+                    <View style={styles.signUpConnector} />
+                    <View style={styles.signUpIcon3}>
+                      <Text style={styles.signUpIcon3Text}>✨</Text>
+                    </View>
                   </View>
                 </Animated.View>
-                
-                <Animated.Text 
+
+                <Animated.Text
                   style={[
                     styles.title,
                     {
@@ -206,7 +222,7 @@ export default function SignUp({
                 >
                   {title}
                 </Animated.Text>
-                <Animated.Text 
+                <Animated.Text
                   style={[
                     styles.subtitle,
                     {
@@ -220,7 +236,7 @@ export default function SignUp({
               </Animated.View>
 
               {/* Enhanced Form Card */}
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.formCard,
                   styles.modernFormCard,
@@ -234,7 +250,7 @@ export default function SignUp({
                 ]}
               >
                 {/* Name Input with animation */}
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.inputGroup,
                     {
@@ -270,7 +286,7 @@ export default function SignUp({
                 </Animated.View>
 
                 {/* Email Input with animation */}
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.inputGroup,
                     {
@@ -307,7 +323,7 @@ export default function SignUp({
                 </Animated.View>
 
                 {/* Password Input with animation */}
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.inputGroup,
                     {
@@ -343,7 +359,7 @@ export default function SignUp({
                 </Animated.View>
 
                 {/* Enhanced Primary Button */}
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.buttonContainer,
                     {

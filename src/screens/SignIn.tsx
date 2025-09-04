@@ -13,6 +13,7 @@ import {
   Animated,
   ActivityIndicator,
   Dimensions,
+  Image,
 } from "react-native";
 
 const { width } = Dimensions.get('window');
@@ -23,7 +24,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootParamList } from "../../App";
 import { styles, Colors } from "../css/SignIn-UpScreen.styles";
 import { signInUser } from "../APIs/APIs";
-import { storeUserEmail } from "../utill/AsyncStorage";
+import { storeUserEmail, storeUserName } from "../utill/AsyncStorage";
 
 interface LoginScreenProps {
   title?: string;
@@ -51,7 +52,7 @@ export default function SignIn({
   const [isEmailFocused, setIsEmailFocused] = useState<boolean>(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -60,7 +61,7 @@ export default function SignIn({
   const loadingOpacity = useRef(new Animated.Value(0)).current;
   const loadingRotation = useRef(new Animated.Value(0)).current;
   const buttonPulse = useRef(new Animated.Value(1)).current;
-  
+
   // Input animation values
   const emailInputScale = useRef(new Animated.Value(1)).current;
   const passwordInputScale = useRef(new Animated.Value(1)).current;
@@ -168,7 +169,7 @@ export default function SignIn({
       duration: 300,
       useNativeDriver: true,
     }).start();
-    
+
     loadingRotation.stopAnimation();
     buttonPulse.stopAnimation(() => {
       buttonPulse.setValue(1);
@@ -189,11 +190,16 @@ export default function SignIn({
     } else {
       setIsLoading(true);
       animateButton();
-      
+
       const result = await signInUser(email, password);
 
       if (result.success) {
         const emailStored = await storeUserEmail(email);
+        
+        // Store user name if available in the response
+        if (result.data?.name) {
+          await storeUserName(result.data.name);
+        }
 
         if (emailStored) {
           navigator.replace("Home", {
@@ -240,7 +246,7 @@ export default function SignIn({
             keyboardShouldPersistTaps="handled"
             bounces={false}
           >
-            <Animated.View 
+            <Animated.View
               style={[
                 styles.content,
                 {
@@ -253,7 +259,7 @@ export default function SignIn({
               ]}
             >
               {/* Header with enhanced animation */}
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.header,
                   {
@@ -261,24 +267,32 @@ export default function SignIn({
                   }
                 ]}
               >
-                {/* Logo Container with pulse animation */}
-                <Animated.View style={[styles.logoContainer, { 
-                  transform: [{ scale: scaleAnim }] 
-                }]}>
-                  <View
-                    style={[
-                      styles.logoCircle,
-                      {
-                        backgroundColor: Colors.primary,
-                        shadowColor: Colors.primary,
-                      }
-                    ]}
-                  >
-                    <Text style={styles.logoText}>👤</Text>
+                {/* Welcome Illustration */}
+                <Animated.View 
+                  style={[
+                    styles.illustrationContainer,
+                    {
+                      transform: [{ scale: scaleAnim }]
+                    }
+                  ]}
+                >
+                  <View style={styles.signInMainIcon}>
+                    <Text style={styles.signInMainIconText}>👋</Text>
+                  </View>
+                  <View style={styles.signInIconsContainer}>
+                    <View style={styles.signInIcon1}>
+                      <Text style={styles.signInIcon1Text}>📱</Text>
+                    </View>
+                    <View style={styles.signInIcon2}>
+                      <Text style={styles.signInIcon2Text}>📋</Text>
+                    </View>
+                    <View style={styles.signInIcon3}>
+                      <Text style={styles.signInIcon3Text}>✓</Text>
+                    </View>
                   </View>
                 </Animated.View>
-                
-                <Animated.Text 
+
+                <Animated.Text
                   style={[
                     styles.title,
                     {
@@ -288,7 +302,7 @@ export default function SignIn({
                 >
                   {title}
                 </Animated.Text>
-                <Animated.Text 
+                <Animated.Text
                   style={[
                     styles.subtitle,
                     {
@@ -302,7 +316,7 @@ export default function SignIn({
               </Animated.View>
 
               {/* Enhanced Form Card */}
-              <Animated.View 
+              <Animated.View
                 style={[
                   styles.formCard,
                   styles.modernFormCard,
@@ -316,7 +330,7 @@ export default function SignIn({
                 ]}
               >
                 {/* Email Input with animation */}
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.inputGroup,
                     {
@@ -355,7 +369,7 @@ export default function SignIn({
                 </Animated.View>
 
                 {/* Password Input with animation */}
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.inputGroup,
                     {
@@ -397,11 +411,11 @@ export default function SignIn({
                 {/* Enhanced Primary Button */}
                 <Animated.View style={[
                   styles.buttonContainer,
-                  { 
+                  {
                     transform: [
                       { scale: buttonScale },
                       { scale: isLoading ? buttonPulse : 1 }
-                    ] 
+                    ]
                   }
                 ]}>
                   <TouchableOpacity
@@ -418,11 +432,11 @@ export default function SignIn({
                       end={{ x: 1, y: 1 }}
                       style={styles.gradientButton}
                     >
-                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                      <View style={styles.loadingContainer}>
                         {isLoading && (
                           <Animated.View
                             style={[
-                              { 
+                              {
                                 opacity: loadingOpacity,
                                 marginRight: 8,
                                 transform: [{

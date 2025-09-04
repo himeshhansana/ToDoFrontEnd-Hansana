@@ -254,3 +254,324 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Made with ❤️ and ☕ by Hansana**
 
 > *"Productivity is never an accident. It is always the result of a commitment to excellence, intelligent planning, and focused effort."*
+
+
+
+
+import React, { useState, useRef, useEffect } from "react";
+import {
+  View, Text, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView,
+  Animated, ActivityIndicator, Alert,
+} from "react-native";
+
+import { StatusBar } from "expo-status-bar";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootParamList } from "../../App";
+import { styles, Colors } from "../css/UserScreen.styles";
+import { getUserProfile, updateUserName } from "../APIs/APIs";
+import { getUserEmail, clearUserEmail, getUserName, storeUserName } from "../utill/AsyncStorage";
+
+type UserNavigationProps = NativeStackNavigationProp<RootParamList, "User">;
+
+interface UserData {
+  name: string;
+  email: string;
+}
+
+export default function User() {
+  const navigator = useNavigation<UserNavigationProps>();
+
+  // User data state
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Edit name states
+  const [isEditingName, setIsEditingName] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>("");
+  const [isNameFocused, setIsNameFocused] = useState<boolean>(false);
+  const [isUpdatingName, setIsUpdatingName] = useState<boolean>(false);
+
+  // Animation values
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+
+  useEffect(() => {
+    // Initial animation sequence
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    setIsLoading(true);
+    try {
+      const userEmail = await getUserEmail();
+
+      if (userEmail) {
+        // Try to get profile from API first
+        const result = await getUserProfile();
+
+        if (result.success) {
+          // If API call succeeds, use the data from API
+          setUserData(result.user);
+          setNewName(result.user.name);
+          // Also store locally for offline access
+          await storeUserName(result.user.name);
+        } else {
+          // If API call fails, fallback to AsyncStorage
+          const userName = await getUserName();
+          const userData = {
+            name: userName || "User",
+            email: userEmail,
+          };
+          setUserData(userData);
+          setNewName(userData.name);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      // Fallback to AsyncStorage on error
+      try {
+        const userEmail = await getUserEmail();
+        const userName = await getUserName();
+        if (userEmail) {
+          const userData = {
+            name: userName || "User",
+            email: userEmail,
+          };
+          setUserData(userData);
+          setNewName(userData.name);
+        }
+      } catch (fallbackError) {
+        console.error("Error with fallback:", fallbackError);
+        Alert.alert("Error", "Failed to load user profile");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateName = async () => {
+    if (!newName.trim()) {
+      Alert.alert("Error", "Name cannot be empty");
+      return;
+    }
+
+    setIsUpdatingName(true);
+    try {
+      // Try to update via API first
+      const result = await updateUserName(newName.trim());
+
+      if (result.success) {
+        // Update local state
+        setUserData(prev => prev ? { ...prev, name: newName.trim() } : null);
+        setIsEditingName(false);
+        // Also store locally for offline access
+        await storeUserName(newName.trim());
+      } else {
+        // If API fails, just show the error (already shown by the API function)
+        // Don't fallback to local storage only, as we want server sync
+        console.error("Failed to update name via API:", result.error);
+      }
+    } catch (error) {
+      console.error("Error updating name:", error);
+      Alert.alert("Error", "Failed to update name. Please check your connection and try again.");
+    } finally {
+      setIsUpdatingName(false);
+    }
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            await clearUserEmail();
+            navigator.reset({
+              index: 0,
+              routes: [{ name: "SignIn" }],
+            });
+          },
+        },
+      ]
+    );
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
+  const cancelNameEdit = () => {
+    setNewName(userData?.name || "");
+    setIsEditingName(false);
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.loadingText}>Loading Profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar style="dark" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            <Animated.View
+              style={{
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              }}
+            >
+              {/* Header */}
+              <View style={styles.header}>
+                <Text style={styles.title}>User Profile</Text>
+                <Text style={styles.subtitle}>Manage your account information</Text>
+              </View>
+
+              {/* Profile Information Card */}
+              <View style={styles.profileCard}>
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>
+                    {userData ? getInitials(userData.name) : "U"}
+                  </Text>
+                </View>
+
+                <Text style={styles.sectionTitle}>Profile Information</Text>
+
+                {/* Email Display - Read Only */}
+                <View style={styles.emailSection}>
+                  <Text style={styles.emailLabel}>Email Address</Text>
+                  <Text style={styles.emailText}>{userData?.email}</Text>
+                </View>
+              </View>
+
+              {/* Edit Name Section */}
+              <View style={styles.editCard}>
+                <View style={styles.formSection}>
+                  <View style={styles.toggleButton}>
+                    <Text style={styles.sectionTitle}>Display Name</Text>
+                    {!isEditingName && (
+                      <TouchableOpacity onPress={() => setIsEditingName(true)}>
+                        <Text style={styles.toggleText}>Edit</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  {isEditingName ? (
+                    <>
+                      <View style={styles.inputGroup}>
+                        <Text style={styles.inputLabel}>Full Name</Text>
+                        <TextInput
+                          style={[
+                            styles.input,
+                            isNameFocused && styles.inputFocused,
+                          ]}
+                          placeholder="Enter your name"
+                          placeholderTextColor={Colors.placeholderText}
+                          value={newName}
+                          onChangeText={setNewName}
+                          onFocus={() => setIsNameFocused(true)}
+                          onBlur={() => setIsNameFocused(false)}
+                          autoCapitalize="words"
+                        />
+                      </View>
+
+                      <View style={styles.buttonRow}>
+                        <View style={styles.buttonRowItem}>
+                          <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={cancelNameEdit}
+                            disabled={isUpdatingName}
+                          >
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.buttonRowItem}>
+                          <TouchableOpacity
+                            style={[
+                              styles.primaryButton,
+                              (isUpdatingName || !newName.trim()) && styles.primaryButtonDisabled,
+                            ]}
+                            onPress={handleUpdateName}
+                            disabled={isUpdatingName || !newName.trim()}
+                          >
+                            {isUpdatingName ? (
+                              <ActivityIndicator
+                                color={(isUpdatingName || !newName.trim()) ? Colors.text : "#FFFFFF"}
+                                size="small"
+                              />
+                            ) : (
+                              <Text style={[
+                                styles.primaryButtonText,
+                                (isUpdatingName || !newName.trim()) && styles.primaryButtonTextDisabled,
+                              ]}>
+                                Update Name
+                              </Text>
+                            )}
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </>
+                  ) : (
+                    <View style={styles.emailSection}>
+                      <Text style={styles.emailText}>{userData?.name}</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              {/* Logout Button */}
+              <View style={styles.editCard}>
+                <TouchableOpacity
+                  style={styles.dangerButton}
+                  onPress={handleLogout}
+                >
+                  <Text style={styles.dangerButtonText}>Logout</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}

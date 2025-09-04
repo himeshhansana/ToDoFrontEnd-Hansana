@@ -5,11 +5,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SignIn from "./src/screens/SignIn";
 import SignUp from "./src/screens/SignUp";
 import Home from "./src/screens/Home";
+import User from "./src/screens/User";
 
 export type RootParamList = {
   SignIn: undefined;
   SignUp: undefined;
   Home: { userId: string };
+  User: undefined;
 };
 const Stack = createNativeStackNavigator<RootParamList>();
 
@@ -20,6 +22,7 @@ export default function App() {
         <Stack.Screen name="SignIn" component={SignIn} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="User" component={User} />
       </Stack.Navigator>
     </NavigationContainer>
   );

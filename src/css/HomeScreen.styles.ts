@@ -16,7 +16,6 @@ export const Colors = {
   gradients: {
     primary: ['#00ff9dff', '#5856D6'],
     primaryDisabled: ['#E5E5EA', '#E5E5EA'],
-    logout: ['#dd0808ff', '#c06d3eff'],
   },
   // Gradient configurations
   gradientConfig: {
@@ -141,29 +140,20 @@ export const homeStyles = StyleSheet.create({
     fontWeight: "bold",
     lineHeight: 28,
   },
-  logoutButtonContainer: {
-    borderRadius: 12,
-    shadowColor: "#FF6B6B",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  logoutButton: {
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
   logoutButtonText: {
-    color: Colors.surface,
+    color: Colors.text,
     fontSize: 14,
-    fontWeight: "600",
-    letterSpacing: 0.3,
+    fontWeight: "500",
+  },
+
+  logoutButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   listContainer: {
     flex: 1,

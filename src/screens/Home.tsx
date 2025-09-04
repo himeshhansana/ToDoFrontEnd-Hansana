@@ -1,19 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  SafeAreaView,
-  FlatList,
-  Modal,
-  TextInput,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Animated,
-  Easing,
+  View, Text, TouchableOpacity, SafeAreaView, FlatList, Modal, TextInput, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback,
+  Keyboard, Animated, Easing,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
@@ -87,7 +75,7 @@ export default function Home({ onToggleTodo, onLogout }: HomeScreenProps) {
     if (result.success && result.todos) {
       setTodos(result.todos);
     }
-    
+
     // Start welcome animation
     setShowWelcome(true);
     startWelcomeAnimation();
@@ -205,14 +193,14 @@ export default function Home({ onToggleTodo, onLogout }: HomeScreenProps) {
       if (result.success) {
         // Refresh todos without animation
         await refreshTodosOnly();
-        
+
         // Clear form and close modal
         setNewTodoTitle("");
         setIsModalVisible(false);
-        
+
         // Show success message
         Alert.alert(
-          "Success! 🎉", 
+          "Success! 🎉",
           `"${newTodoTitle.trim()}" has been added to your todo list!`,
           [
             {
@@ -410,7 +398,7 @@ export default function Home({ onToggleTodo, onLogout }: HomeScreenProps) {
           end={Colors.gradientConfig.end}
         >
           {/* Animated Logo */}
-          <Animated.View 
+          <Animated.View
             style={getAnimatedLogoStyle(fadeAnim, scaleAnim, rotateInterpolate)}
           >
             <Text style={homeStyles.welcomeLogo}>📝</Text>
@@ -433,7 +421,7 @@ export default function Home({ onToggleTodo, onLogout }: HomeScreenProps) {
             <Text style={homeStyles.welcomeLoadingText}>
               {isLoading ? "Loading your todos..." : "Ready to be productive!"}
             </Text>
-            
+
             {/* Loading dots animation */}
             {isLoading && (
               <View style={homeStyles.loadingDotsContainer}>
@@ -455,160 +443,166 @@ export default function Home({ onToggleTodo, onLogout }: HomeScreenProps) {
       <SafeAreaView style={homeStyles.safeArea}>
         <StatusBar style="dark" />
 
-      {/* Header */}
-      <View style={homeStyles.header}>
-        <View>
-          <Text style={homeStyles.title}>My Todos</Text>
-          <Text style={homeStyles.subtitle}>
-            {activeTodos.length} active, {completedTodos.length} completed
-          </Text>
-        </View>
+        {/* Header */}
+        <View style={homeStyles.header}>
+          <View>
+            <Text style={homeStyles.title}>My Todos</Text>
+            <Text style={homeStyles.subtitle}>
+              {activeTodos.length} active, {completedTodos.length} completed
+            </Text>
+          </View>
 
-        <View style={homeStyles.headerButtons}>
-          <TouchableOpacity
-            style={homeStyles.addButton}
-            onPress={() => setIsModalVisible(true)}
-            activeOpacity={Colors.activeOpacity.button}
-          >
-            <Text style={homeStyles.addButtonText}>+</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleLogout}
-            activeOpacity={Colors.activeOpacity.button}
-            style={homeStyles.logoutButtonContainer}
-          >
-            <LinearGradient
-              colors={Colors.gradients.logout}
-              style={homeStyles.logoutButton}
-              start={Colors.gradientConfig.start}
-              end={Colors.gradientConfig.end}
+          <View style={homeStyles.headerButtons}>
+            <TouchableOpacity
+              style={homeStyles.addButton}
+              onPress={() => setIsModalVisible(true)}
+              activeOpacity={Colors.activeOpacity.button}
             >
-              <Text style={homeStyles.logoutButtonText}>Logout</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+              <Text style={homeStyles.addButtonText}>+</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={homeStyles.addButton}
+              onPress={() => navigator.navigate("User")}
+              activeOpacity={Colors.activeOpacity.button}
+            >
+              <Text style={homeStyles.addButtonText}>👤</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleLogout}
+              activeOpacity={Colors.activeOpacity.button}
+            >
+              <LinearGradient
+                colors={["#ff4d4f", "#ff7875"]}
+                style={homeStyles.logoutButton}
+                start={Colors.gradientConfig.start}
+                end={Colors.gradientConfig.end}
+              >
+                <Text style={homeStyles.logoutButtonText}>🚪</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      {/* Todo List */}
-      <View style={homeStyles.listContainer}>
-        <FlatList
-          data={todos}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderTodoItem}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={homeStyles.listContent}
-          ItemSeparatorComponent={() => <View style={homeStyles.separator} />}
-        />
-      </View>
+        {/* Todo List */}
+        <View style={homeStyles.listContainer}>
+          <FlatList
+            data={todos}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderTodoItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={homeStyles.listContent}
+            ItemSeparatorComponent={() => <View style={homeStyles.separator} />}
+          />
+        </View>
 
-      {/* Add Todo Modal */}
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => {
-          if (!isAddingTodo) {
-            setIsModalVisible(false);
-            setNewTodoTitle("");
-          }
-        }}
-      >
-        <KeyboardAvoidingView
-          style={homeStyles.modalContainer}
-          behavior={Colors.keyboardBehavior}
+        {/* Add Todo Modal */}
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => {
+            if (!isAddingTodo) {
+              setIsModalVisible(false);
+              setNewTodoTitle("");
+            }
+          }}
         >
-          <TouchableWithoutFeedback onPress={dismissKeyboard}>
-            <View style={homeStyles.modalOverlay}>
-              <View style={homeStyles.modalContent}>
-                {/* Header with icon */}
-                <View style={homeStyles.modalHeader}>
-                  <View style={homeStyles.modalIconContainer}>
-                    <Text style={homeStyles.modalIcon}>✏️</Text>
+          <KeyboardAvoidingView
+            style={homeStyles.modalContainer}
+            behavior={Colors.keyboardBehavior}
+          >
+            <TouchableWithoutFeedback onPress={dismissKeyboard}>
+              <View style={homeStyles.modalOverlay}>
+                <View style={homeStyles.modalContent}>
+                  {/* Header with icon */}
+                  <View style={homeStyles.modalHeader}>
+                    <View style={homeStyles.modalIconContainer}>
+                      <Text style={homeStyles.modalIcon}>✏️</Text>
+                    </View>
+                    <Text style={homeStyles.modalTitle}>Add New Todo</Text>
+                    <Text style={homeStyles.modalSubtitle}>What would you like to accomplish?</Text>
                   </View>
-                  <Text style={homeStyles.modalTitle}>Add New Todo</Text>
-                  <Text style={homeStyles.modalSubtitle}>What would you like to accomplish?</Text>
-                </View>
 
-                <View style={homeStyles.inputGroup}>
-                  <Text style={homeStyles.inputLabel}>Todo Title</Text>
-                  <TextInput
-                    style={[
-                      homeStyles.input,
-                      isTitleFocused && homeStyles.inputFocused,
-                      !isFormValid && newTodoTitle.length > 0 && !isAddingTodo && homeStyles.inputError
-                    ]}
-                    value={newTodoTitle}
-                    onChangeText={setNewTodoTitle}
-                    onFocus={() => setIsTitleFocused(true)}
-                    onBlur={() => setIsTitleFocused(false)}
-                    placeholder="e.g., Buy groceries, Call mom, Finish project..."
-                    placeholderTextColor={Colors.placeholderText}
-                    autoCapitalize="sentences"
-                    returnKeyType="done"
-                    onSubmitEditing={handleAddTodo}
-                    autoFocus
-                    multiline={false}
-                    maxLength={100}
-                    editable={!isAddingTodo}
-                  />
-                  <View style={homeStyles.inputFooter}>
-                    <Text style={homeStyles.characterCount}>
-                      {newTodoTitle.length}/100
-                    </Text>
+                  <View style={homeStyles.inputGroup}>
+                    <Text style={homeStyles.inputLabel}>Todo Title</Text>
+                    <TextInput
+                      style={[
+                        homeStyles.input,
+                        isTitleFocused && homeStyles.inputFocused,
+                        !isFormValid && newTodoTitle.length > 0 && !isAddingTodo && homeStyles.inputError
+                      ]}
+                      value={newTodoTitle}
+                      onChangeText={setNewTodoTitle}
+                      onFocus={() => setIsTitleFocused(true)}
+                      onBlur={() => setIsTitleFocused(false)}
+                      placeholder="e.g., Buy groceries, Call mom, Finish project..."
+                      placeholderTextColor={Colors.placeholderText}
+                      autoCapitalize="sentences"
+                      returnKeyType="done"
+                      onSubmitEditing={handleAddTodo}
+                      autoFocus
+                      multiline={false}
+                      maxLength={100}
+                      editable={!isAddingTodo}
+                    />
+                    <View style={homeStyles.inputFooter}>
+                      <Text style={homeStyles.characterCount}>
+                        {newTodoTitle.length}/100
+                      </Text>
+                    </View>
                   </View>
-                </View>
 
-                <View style={homeStyles.modalButtons}>
-                  <TouchableOpacity
-                    style={[
-                      homeStyles.cancelButton,
-                      isAddingTodo && homeStyles.disabledButton
-                    ]}
-                    onPress={() => {
-                      if (!isAddingTodo) {
-                        setIsModalVisible(false);
-                        setNewTodoTitle("");
-                      }
-                    }}
-                    activeOpacity={isAddingTodo ? 1 : Colors.activeOpacity.button}
-                    disabled={isAddingTodo}
-                  >
-                    <Text style={[
-                      homeStyles.cancelButtonText,
-                      isAddingTodo && homeStyles.disabledButtonText
-                    ]}>
-                      Cancel
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={handleAddTodo}
-                    activeOpacity={Colors.activeOpacity.button}
-                    disabled={isAddButtonDisabled}
-                    style={homeStyles.primaryButtonContainer}
-                  >
-                    <LinearGradient
-                      colors={isAddButtonDisabled ? Colors.gradients.primaryDisabled : Colors.gradients.primary}
-                      style={homeStyles.primaryButton}
-                      start={Colors.gradientConfig.start}
-                      end={Colors.gradientConfig.end}
+                  <View style={homeStyles.modalButtons}>
+                    <TouchableOpacity
+                      style={[
+                        homeStyles.cancelButton,
+                        isAddingTodo && homeStyles.disabledButton
+                      ]}
+                      onPress={() => {
+                        if (!isAddingTodo) {
+                          setIsModalVisible(false);
+                          setNewTodoTitle("");
+                        }
+                      }}
+                      activeOpacity={isAddingTodo ? 1 : Colors.activeOpacity.button}
+                      disabled={isAddingTodo}
                     >
                       <Text style={[
-                        homeStyles.primaryButtonText,
-                        isAddButtonDisabled && homeStyles.primaryButtonTextDisabled
+                        homeStyles.cancelButtonText,
+                        isAddingTodo && homeStyles.disabledButtonText
                       ]}>
-                        {isAddingTodo ? 'Adding...' : 'Add Todo'}
+                        Cancel
                       </Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={handleAddTodo}
+                      activeOpacity={Colors.activeOpacity.button}
+                      disabled={isAddButtonDisabled}
+                      style={homeStyles.primaryButtonContainer}
+                    >
+                      <LinearGradient
+                        colors={isAddButtonDisabled ? Colors.gradients.primaryDisabled : Colors.gradients.primary}
+                        style={homeStyles.primaryButton}
+                        start={Colors.gradientConfig.start}
+                        end={Colors.gradientConfig.end}
+                      >
+                        <Text style={[
+                          homeStyles.primaryButtonText,
+                          isAddButtonDisabled && homeStyles.primaryButtonTextDisabled
+                        ]}>
+                          {isAddingTodo ? 'Adding...' : 'Add Todo'}
+                        </Text>
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
-      </Modal>
-    </SafeAreaView>
+            </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
+        </Modal>
+      </SafeAreaView>
     </Animated.View>
   );
 }

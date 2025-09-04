@@ -172,4 +172,140 @@ export const styles = StyleSheet.create({
   buttonTextModern: {
     fontWeight: '600',
   },
+  // Illustration styles for SignIn and SignUp
+  illustrationContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  // SignIn specific styles
+  signInMainIcon: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F0F8FF',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  signInMainIconText: {
+    fontSize: 50,
+  },
+  signInIconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  signInIcon1: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#E8F5E8',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  signInIcon1Text: {
+    fontSize: 20,
+  },
+  signInIcon2: {
+    width: 60,
+    height: 40,
+    backgroundColor: '#FFF0E6',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  signInIcon2Text: {
+    fontSize: 18,
+  },
+  signInIcon3: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#F0F0FF',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signInIcon3Text: {
+    fontSize: 20,
+  },
+  // SignUp specific styles
+  signUpMainIcon: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F0FFF0',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  signUpMainIconText: {
+    fontSize: 50,
+  },
+  signUpIconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  signUpIcon1: {
+    width: 45,
+    height: 45,
+    backgroundColor: '#FFE6F2',
+    borderRadius: 22.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  signUpIcon1Text: {
+    fontSize: 22,
+  },
+  signUpConnector: {
+    width: 25,
+    height: 3,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 1.5,
+    marginRight: 8,
+  },
+  signUpIcon2: {
+    width: 45,
+    height: 45,
+    backgroundColor: '#E6F3FF',
+    borderRadius: 22.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  signUpIcon2Text: {
+    fontSize: 22,
+  },
+  signUpIcon3: {
+    width: 45,
+    height: 45,
+    backgroundColor: '#F0FFE6',
+    borderRadius: 22.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signUpIcon3Text: {
+    fontSize: 22,
+  },
+  // Loading animation container
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
